@@ -106,3 +106,36 @@ def create_doc_vectorstore(file_path, collection_name):
         collection_name=unique_name
     )
     return vector_store, len(docs), len(chunks)
+
+def ask_single_doc(vector_store, question):
+    prompt = PromptTemplate.from_template("""
+    You are a financial analyst assistant.
+    Use ONLY the context below to answer.
+    If information is not available, say "Not found in document."
+    
+    IMPORTANT RULES:
+    - Keep answer SHORT and CONCISE — max 5-6 lines
+    - Only give KEY numbers and percentages
+    - No lengthy explanations
+    - Use bullet points only for key metrics
+    
+    Context: {context}
+    Question: {question}
+    
+    Short Answer:
+    """)
+
+    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+    llm = get_llm()
+
+    def format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
+    chain = (
+        {"context": retriever | format_docs,
+         "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+    return chain.invoke(question)
