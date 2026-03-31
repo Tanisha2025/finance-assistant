@@ -90,3 +90,19 @@ def compare_documents(file_path_1, file_path_2, name_1, name_2, question):
         "doc1_stats": {"pages": pages1, "chunks": chunks1},
         "doc2_stats": {"pages": pages2, "chunks": chunks2},
     }
+def create_doc_vectorstore(file_path, collection_name):
+    docs = load_document(file_path)
+    chunks = chunk_documents(docs)
+    embeddings = get_embeddings()
+    
+    # ← Unique collection name use karo
+    import time
+    unique_name = f"{collection_name}_{int(time.time())}"
+    
+    vector_store = Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        persist_directory=f"chroma_db_{unique_name}",
+        collection_name=unique_name
+    )
+    return vector_store, len(docs), len(chunks)
