@@ -34,13 +34,19 @@ def ask_single_doc(vector_store, question):
     prompt = PromptTemplate.from_template("""
     You are a financial analyst assistant.
     Use ONLY the context below to answer.
-    If information is not available, say "Not found in document."
-    Be specific with numbers and percentages.
+    
+    STRICT RULES:
+    - Maximum 5 lines only
+    - Only KEY numbers and percentages
+    - No lengthy explanations
+    - Be direct and concise
     
     Context: {context}
     Question: {question}
-    Answer:
+    
+    Concise Answer (max 5 lines):
     """)
+
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
     llm = get_llm()
 
@@ -56,6 +62,7 @@ def ask_single_doc(vector_store, question):
     )
     return chain.invoke(question)
 
+
 def compare_documents(file_path_1, file_path_2, name_1, name_2, question):
     vs1, pages1, chunks1 = create_doc_vectorstore(file_path_1, "doc1")
     vs2, pages2, chunks2 = create_doc_vectorstore(file_path_2, "doc2")
@@ -66,19 +73,27 @@ def compare_documents(file_path_1, file_path_2, name_1, name_2, question):
     llm = get_llm()
     comparison_prompt = f"""
     You are a senior financial analyst.
-    Compare these two answers and give a final comparison summary.
-    Be specific, use numbers, and give a clear winner if applicable.
+    Compare these two companies briefly.
     
-    {name_1} Answer: {answer1}
-    {name_2} Answer: {answer2}
+    STRICT RULES:
+    - Maximum 10 lines total
+    - Be direct and concise
+    - Only KEY differences and numbers
+    - Give clear winner at end
+    - No lengthy explanations
+    
+    {name_1} Data: {answer1}
+    {name_2} Data: {answer2}
     Question: {question}
     
-    Give a structured comparison with:
-    1. {name_1} Summary
-    2. {name_2} Summary
-    3. Key Differences
-    4. Final Verdict
+    Brief Comparison (max 10 lines):
+    1. {name_1} Summary (2 lines)
+    2. {name_2} Summary (2 lines)
+    3. Key Differences (3 lines)
+    4. Final Verdict (2 lines)
     """
+
+    from langchain_core.messages import HumanMessage
     response = llm.invoke([HumanMessage(content=comparison_prompt)])
 
     return {
@@ -90,6 +105,7 @@ def compare_documents(file_path_1, file_path_2, name_1, name_2, question):
         "doc1_stats": {"pages": pages1, "chunks": chunks1},
         "doc2_stats": {"pages": pages2, "chunks": chunks2},
     }
+
 def create_doc_vectorstore(file_path, collection_name):
     docs = load_document(file_path)
     chunks = chunk_documents(docs)
