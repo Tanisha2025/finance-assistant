@@ -4,10 +4,9 @@ def chunk_documents(documents):
     """Documents ko chunks mein todta hai"""
     
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,        # Har chunk 500 words ka
-        chunk_overlap=50,      # 50 words overlap — context na toote
-        separators=["\n\n", "\n", ".", " "]
-    )
+    chunk_size=1000,   # 500 se 1000 karo
+    chunk_overlap=100, # overlap bhi badha do
+)
     
     chunks = splitter.split_documents(documents)
     print(f"✅ Chunking done! Total chunks: {len(chunks)}")
