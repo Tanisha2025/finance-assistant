@@ -33,9 +33,9 @@ def build_rag_pipeline():
 
     vector_store = load_vector_store()
     retriever = vector_store.as_retriever(
-        search_kwargs={"k": 3}
-    )
-    llm = get_llm()
+    search_kwargs={"k": 5}  # 3 se 5 karo
+)
+
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)

@@ -31,11 +31,7 @@ def load_vector_store():
     print("✅ Vector store loaded!")
     return vector_store
 
-def search_docs(query, k=3):
-    """Query se related chunks dhundta hai"""
-    
+def search_docs(query, k=5):  # k=3 se k=5 karo
     vector_store = load_vector_store()
     results = vector_store.similarity_search(query, k=k)
-    
-    print(f"✅ Found {len(results)} relevant chunks!")
     return results
