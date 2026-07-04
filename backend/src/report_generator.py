@@ -10,20 +10,17 @@ load_dotenv()
 def get_llm():
     return ChatGroq(
         api_key=os.getenv("GROQ_API_KEY"),
-        model_name="llama-3.3-70b-versatile"
+        model_name = "llama-3.1-8b-instant"
     )
 
 def generate_report_content(rag_chain, filename):
-    """AI se poora report content generate karta hai"""
-    
-    llm = get_llm()
     
     questions = {
-        "executive_summary": "Provide a brief executive summary of this financial document in 3-4 sentences.",
-        "key_metrics": "What are the key financial metrics? List revenue, profit, margins and growth rates with exact numbers.",
-        "risk_factors": "What are the top 3-5 risk factors mentioned in this document?",
-        "highlights": "What are the 3-5 most important highlights or achievements?",
-        "outlook": "What is the future outlook or guidance mentioned in this document?"
+        "executive_summary": "What is the total net sales, net income, and earnings per share for fiscal year 2023? Summarize the overall financial performance.",
+        "key_metrics": "What are the exact figures for: total net sales, gross margin, operating income, net income, earnings per share (basic and diluted), and R&D expenses for 2023?",
+        "risk_factors": "List the top 5 risk factors mentioned under Item 1A Risk Factors in this document.",
+        "highlights": "What were the major product launches, share repurchase amounts, dividend amounts, and significant business events in fiscal year 2023?",
+        "outlook": "What does management say about future guidance, liquidity, capital resources, and expected performance in the next 12 months?"
     }
     
     results = {}
